@@ -1,729 +1,1050 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>3D Space Runner</title>
-    <style>
-        /* Обновлённые стили */
-        body { 
-            margin: 0; 
-            overflow: hidden;
-            font-family: 'Arial', sans-serif;
-            touch-action: none;
-            background: #000;
-        }
-        
-        #menu {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
-            padding: 40px 60px;
-            border-radius: 20px;
-            color: white;
-            z-index: 100;
-            box-shadow: 0 0 30px rgba(0, 150, 255, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            min-width: 300px;
-            max-width: 90%;
-        }
+<title>3D Space Runner</title>
+<style>
+/* Обновлённые стили */
+body {
+margin: 0;
+overflow: hidden;
+font-family: 'Arial', sans-serif;
+touch-action: none;
+background: #000;
+/* Запрет выделения текста */
+user-select: none;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+}
 
-        #menu h1 {
-            font-size: 2.5em;
-            margin: 0 0 30px 0;
-            text-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
-            background: linear-gradient(45deg, #00ffff, #0066ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+#menu {
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+text-align: center;
+background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+padding: 40px 60px;
+border-radius: 20px;
+color: white;
+z-index: 100;
+box-shadow: 0 0 30px rgba(0, 150, 255, 0.3);
+border: 2px solid rgba(255, 255, 255, 0.1);
+min-width: 300px;
+max-width: 90%;
+}
 
-        #stats {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
-            padding: 40px 60px;
-            border-radius: 20px;
-            color: white;
-            z-index: 100;
-            box-shadow: 0 0 30px rgba(0, 150, 255, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            min-width: 300px;
-            max-width: 90%;
-        }
+#menu h1 {
+font-size: 2.5em;
+margin: 0 0 30px 0;
+text-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+background: linear-gradient(45deg, #00ffff, #0066ff);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+}
 
-        #stats h2 {
-            font-size: 2em;
-            margin: 0 0 25px 0;
-            color: #00ffff;
-            text-align: center;
-        }
+#stats {
+display: none;
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+padding: 40px 60px;
+border-radius: 20px;
+color: white;
+z-index: 100;
+box-shadow: 0 0 30px rgba(0, 150, 255, 0.3);
+border: 2px solid rgba(255, 255, 255, 0.1);
+min-width: 300px;
+max-width: 90%;
+}
 
-        #gameOver {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: linear-gradient(145deg, #2e1a1a 0%, #3e1616 100%);
-            padding: 40px 60px;
-            border-radius: 20px;
-            color: white;
-            text-align: center;
-            z-index: 100;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            min-width: 300px;
-            max-width: 90%;
-        }
+#stats h2 {
+font-size: 2em;
+margin: 0 0 25px 0;
+color: #00ffff;
+text-align: center;
+}
 
-        #gameOver h2 {
-            font-size: 2em;
-            margin: 0 0 25px 0;
-            color: #ff4444;
-            text-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
-        }
+#gameOver {
+display: none;
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+background: linear-gradient(145deg, #2e1a1a 0%, #3e1616 100%);
+padding: 40px 60px;
+border-radius: 20px;
+color: white;
+text-align: center;
+z-index: 100;
+box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
+border: 2px solid rgba(255, 255, 255, 0.1);
+min-width: 300px;
+max-width: 90%;
+}
 
-        .menu-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 100%;
-        }
+#gameOver h2 {
+font-size: 2em;
+margin: 0 0 25px 0;
+color: #ff4444;
+text-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+}
 
-        button {
-            background: linear-gradient(145deg, #00a8ff, #0066ff);
-            border: none;
-            padding: 15px 30px;
-            margin: 0;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1.1em;
-            transition: all 0.3s ease;
-            color: white;
-            width: 100%;
-            box-shadow: 0 5px 15px rgba(0, 100, 255, 0.3);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+.menu-buttons {
+display: flex;
+flex-direction: column;
+gap: 15px;
+width: 100%;
+}
 
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 100, 255, 0.5);
-            background: linear-gradient(145deg, #00c3ff, #0080ff);
-        }
+button {
+background: linear-gradient(145deg, #00a8ff, #0066ff);
+border: none;
+padding: 15px 30px;
+margin: 0;
+border-radius: 10px;
+cursor: pointer;
+font-size: 1.1em;
+transition: all 0.3s ease;
+color: white;
+width: 100%;
+box-shadow: 0 5px 15px rgba(0, 100, 255, 0.3);
+text-transform: uppercase;
+letter-spacing: 1px;
+}
 
-        button:active {
-            transform: translateY(0);
-            box-shadow: 0 3px 10px rgba(0, 100, 255, 0.3);
-        }
+button:hover {
+transform: translateY(-2px);
+box-shadow: 0 8px 20px rgba(0, 100, 255, 0.5);
+background: linear-gradient(145deg, #00c3ff, #0080ff);
+}
 
-        #score {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            color: white;
-            font-size: 24px;
-            z-index: 50;
-            display: none;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 10px 20px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        }
+button:active {
+transform: translateY(0);
+box-shadow: 0 3px 10px rgba(0, 100, 255, 0.3);
+}
 
-        #joystick {
-            position: fixed;
-            width: 100px;
-            height: 100px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            display: none;
-            transform: translate(-50%, -50%);
-            backdrop-filter: blur(5px);
-        }
+#score {
+position: fixed;
+top: 20px;
+left: 20px;
+color: white;
+font-size: 24px;
+z-index: 50;
+display: none;
+background: rgba(0, 0, 0, 0.6);
+padding: 10px 20px;
+border-radius: 10px;
+border: 1px solid rgba(255, 255, 255, 0.2);
+text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
 
-        #stick {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            left: 25px;
-            top: 25px;
-            transition: transform 0.1s;
-            backdrop-filter: blur(2px);
-        }
+#joystick {
+position: fixed;
+width: 100px;
+height: 100px;
+background: rgba(255, 255, 255, 0.2);
+border-radius: 50%;
+display: none;
+transform: translate(-50%, -50%);
+backdrop-filter: blur(5px);
+z-index: 99;
+}
 
-        #shootButton {
-            position: fixed;
-            left: calc(50vw - 285px);
-            bottom: 30px;
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: rgba(255, 165, 0, 0.6);
-            border: 2px solid #ffa500;
-            display: none;
-            cursor: pointer;
-            z-index: 99;
-            touch-action: manipulation;
-            box-shadow: 0 0 20px rgba(255, 165, 0, 0.3);
-            transition: all 0.2s;
-        }
+#stick {
+position: absolute;
+width: 50px;
+height: 50px;
+background: rgba(255, 255, 255, 0.5);
+border-radius: 50%;
+left: 25px;
+top: 25px;
+transition: transform 0.1s;
+backdrop-filter: blur(2px);
+}
 
-        #shootButton:active {
-            transform: scale(0.95);
-            background: rgba(255, 165, 0, 0.8);
-        }
+#shootButton {
+position: fixed;
+right: 30px;
+bottom: 30px;
+width: 70px;
+height: 70px;
+border-radius: 50%;
+background: rgba(255, 165, 0, 0.6);
+border: 2px solid #ffa500;
+display: none;
+cursor: pointer;
+z-index: 99;
+touch-action: manipulation;
+box-shadow: 0 0 20px rgba(255, 165, 0, 0.3);
+transition: all 0.2s;
+}
 
-        #shootButton::after {
-            content: "🔫";
-            font-size: 28px;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            filter: drop-shadow(0 0 5px rgba(0,0,0,0.3));
-        }
+#shootButton:active {
+transform: scale(0.95);
+background: rgba(255, 165, 0, 0.8);
+}
 
-        .stats-content {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            font-size: 1.1em;
-        }
+#shootButton::after {
+content: "🔫";
+font-size: 28px;
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+filter: drop-shadow(0 0 5px rgba(0,0,0,0.3));
+}
 
-        .stats-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
+.stats-content {
+display: flex;
+flex-direction: column;
+gap: 15px;
+font-size: 1.1em;
+}
 
-        .stats-item:last-child {
-            border-bottom: none;
-        }
+.stats-item {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 10px 0;
+border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-        @media (max-width: 768px) {
-            #menu {
-                padding: 30px;
-                width: 80%;
-            }
+.stats-item:last-child {
+border-bottom: none;
+}
 
-            #menu h1 {
-                font-size: 2em;
-            }
+/* Баннер для рекламы */
+#bannerAd {
+position: fixed;
+bottom: 0;
+left: 0;
+width: 100%;
+height: 70px;
+background-color: #1e1e2e;
+color: white;
+display: flex;
+align-items: center;
+justify-content: center;
+z-index: 200;
+border-top: 1px solid rgba(255, 255, 255, 0.1);
+font-size: 14px;
+}
 
-            button {
-                padding: 12px 20px;
-                font-size: 1em;
-            }
+#bannerAd .ad-content {
+text-align: center;
+padding: 10px;
+}
 
-            #score {
-                font-size: 18px;
-                top: 10px;
-                left: 10px;
-                padding: 8px 15px;
-            }
+#bannerAd .close-ad {
+position: absolute;
+right: 10px;
+top: 10px;
+background: none;
+border: none;
+color: #aaa;
+cursor: pointer;
+font-size: 16px;
+}
 
-            #shootButton {
-                width: 60px;
-                height: 60px;
-                bottom: 20px;
-            }
+@media (max-width: 768px) {
+#menu {
+padding: 30px;
+width: 80%;
+}
 
-            #shootButton::after {
-                font-size: 24px;
-            }
+#menu h1 {
+font-size: 2em;
+}
 
-            #stats, #gameOver {
-                padding: 30px;
-            }
-        }
+button {
+padding: 12px 20px;
+font-size: 1em;
+}
 
-        @media (hover: none) and (pointer: coarse) {
-            #shootButton {
-                display: block;
-            }
-        }
-    </style>
+#score {
+font-size: 18px;
+top: 10px;
+left: 10px;
+padding: 8px 15px;
+}
+
+#shootButton {
+width: 60px;
+height: 60px;
+bottom: 20px;
+right: 20px;
+}
+
+#shootButton::after {
+font-size: 24px;
+}
+
+#stats, #gameOver {
+padding: 30px;
+}
+
+#bannerAd {
+height: 60px;
+font-size: 12px;
+}
+}
+
+@media (hover: none) and (pointer: coarse) {
+#shootButton {
+display: block;
+}
+}
+</style>
 </head>
 <body>
-    <div id="shootButton"></div>
-    <div id="score">Score: 0</div>
-    
-    <div id="menu">
-        <h1>🚀 Space Runner</h1>
-        <div class="menu-buttons">
-            <button onclick="startGame()">Новая игра</button>
-            <button onclick="showStats()">Статистика</button>
-        </div>
-    </div>
+<div id="shootButton"></div>
+<div id="score">Score: 0</div>
 
-    <div id="stats">
-        <h2>📊 Статистика</h2>
-        <div class="stats-content">
-            <div class="stats-item">
-                <span>🏆 Рекорд:</span>
-                <span id="highScoreValue">0</span>
-            </div>
-            <div class="stats-item">
-                <span>🎯 Уничтожено:</span>
-                <span id="totalKilled">0</span>
-            </div>
-            <div class="stats-item">
-                <span>⏱ Время игры:</span>
-                <span id="totalTime">0:00</span>
-            </div>
-        </div>
-        <div class="menu-buttons" style="margin-top: 25px;">
-            <button onclick="hideStats()">Назад</button>
-        </div>
-    </div>
+<div id="bannerAd" style="display: none;">
+<div class="ad-content">
+Реклама<br>
+<small>Поддержите разработчиков</small>
+</div>
+<button class="close-ad" onclick="hideBannerAd()"> ✕ </button>
+</div>
 
-    <div id="gameOver">
-        <h2>💥 Игра окончена!</h2>
-        <div class="stats-content" style="margin: 25px 0;">
-            <div class="stats-item">
-                <span>🎯 Счет:</span>
-                <span id="finalScore">0</span>
-            </div>
-            <div class="stats-item">
-                <span>🏆 Рекорд:</span>
-                <span id="finalHighScore">0</span>
-            </div>
-        </div>
-        <div class="menu-buttons">
-            <button onclick="startGame()">🔄 Играть снова</button>
-            <button onclick="showMenu()">📋 Главное меню</button>
-        </div>
-    </div>
+<div id="menu">
+<h1>🚀 Space Runner</h1>
+<div class="menu-buttons">
+<button onclick="startGame()">Новая игра</button>
+<button onclick="showStats()">Статистика</button>
+<button id="shareBtn">Поделиться</button>
+</div>
+</div>
 
-    <div id="joystick">
-        <div id="stick"></div>
-    </div>
+<div id="stats">
+<h2>📊 Статистика</h2>
+<div class="stats-content">
+<div class="stats-item">
+<span>🏆 Рекорд:</span>
+<span id="highScoreValue">0</span>
+</div>
+<div class="stats-item">
+<span>🎯 Уничтожено:</span>
+<span id="totalKilled">0</span>
+</div>
+<div class="stats-item">
+<span> ⏱ Время игры: </span>
+<span id="totalTime">0:00</span>
+</div>
+<div class="stats-item">
+<span>👤 Игрок:</span>
+<span id="playerName">Гость</span>
+</div>
+</div>
+<div class="menu-buttons" style="margin-top: 25px;">
+<button onclick="hideStats()">Назад</button>
+</div>
+</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script>
-        let scene, camera, renderer, ship, asteroids = [], bullets = [];
-        let speed = 5, score = 0, highScore = 0, gameOver = false;
-        let gameStarted = false, isTouching = false;
-        let deltaX = 0, deltaY = 0, moveSpeed = 15;
-        const loader = new THREE.GLTFLoader();
-        let joystickBaseX = 0, joystickBaseY = 0;
-        let canShoot = true;
-        const BULLET_SPEED = 50;
-        const SHOOT_DELAY = 300;
-        const MAX_BOUNDARIES = { x: 6, y: 4.5 };
-        let currentBoundaries = { x: MAX_BOUNDARIES.x, y: MAX_BOUNDARIES.y };
-        let prevTime = Date.now();
-        const ASTEROID_BASE_SPEED = 12;
-        const BASE_SPAWN_INTERVAL = 1.0;
-        const SPEED_INCREASE_RATE = 0.9;
-        let spawnTimer = 0;
-        let SPAWN_INTERVAL = BASE_SPAWN_INTERVAL;
-        let totalKilled = 0;
-        let startTime = 0;
+<div id="gameOver">
+<h2>💥 Игра окончена!</h2>
+<div class="stats-content" style="margin: 25px 0;">
+<div class="stats-item">
+<span>🎯 Счет:</span>
+<span id="finalScore">0</span>
+</div>
+<div class="stats-item">
+<span>🏆 Рекорд:</span>
+<span id="finalHighScore">0</span>
+</div>
+</div>
+<div class="menu-buttons">
+<button onclick="startGame()">🔄 Играть снова</button>
+<button onclick="showMenu()">📋 Главное меню</button>
+</div>
+</div>
 
-        function calculateBoundaries() {
-            const cameraZ = camera.position.z;
-            const aspect = window.innerWidth / window.innerHeight;
-            const fovRad = THREE.MathUtils.degToRad(camera.fov / 2);
-            const visibleWidth = 2 * Math.tan(fovRad) * cameraZ * aspect;
-            const visibleHeight = 2 * Math.tan(fovRad) * cameraZ;
-            currentBoundaries.x = Math.min(MAX_BOUNDARIES.x, visibleWidth * 0.45);
-            currentBoundaries.y = Math.min(MAX_BOUNDARIES.y, visibleHeight * 0.45);
-        }
+<div id="joystick">
+<div id="stick"></div>
+</div>
 
-        function updateShipPosition(deltaTime) {
-            if (!gameStarted || gameOver || !ship) return;
-            calculateBoundaries();
-            
-            ship.position.x = THREE.MathUtils.clamp(
-                ship.position.x + deltaX * moveSpeed * deltaTime,
-                -currentBoundaries.x,
-                currentBoundaries.x
-            );
-            
-            ship.position.y = THREE.MathUtils.clamp(
-                ship.position.y + -deltaY * moveSpeed * deltaTime,
-                -currentBoundaries.y,
-                currentBoundaries.y
-            );
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
-            ship.rotation.z = THREE.MathUtils.lerp(ship.rotation.z, -deltaX * 0.3, 0.1 * deltaTime * 60);
-            ship.rotation.x = THREE.MathUtils.lerp(ship.rotation.x, deltaY * 0.2, 0.1 * deltaTime * 60);
-        }
+<script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+<script>
+// Инициализация VK
+const APP_ID = 53620616;
+let vkUser = null;
+let vkUserId = null;
+let vkAccessToken = null;
 
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            calculateBoundaries();
-        }
+// Глобальные переменные игры
+let scene, camera, renderer, ship, asteroids = [], bullets = [];
+let speed = 5, score = 0, highScore = 0, gameOver = false;
+let gameStarted = false, isTouching = false;
+let deltaX = 0, deltaY = 0, moveSpeed = 15;
+const loader = new THREE.GLTFLoader();
+let joystickBaseX = 0, joystickBaseY = 0;
+let canShoot = true;
+const BULLET_SPEED = 50;
+const SHOOT_DELAY = 300;
+const MAX_BOUNDARIES = { x: 6, y: 4.5 };
+let currentBoundaries = { x: MAX_BOUNDARIES.x, y: MAX_BOUNDARIES.y };
+let prevTime = Date.now();
+const ASTEROID_BASE_SPEED = 12;
+const BASE_SPAWN_INTERVAL = 1.0;
+const SPEED_INCREASE_RATE = 0.9;
+let spawnTimer = 0;
+let SPAWN_INTERVAL = BASE_SPAWN_INTERVAL;
+let totalKilled = 0;
+let startTime = 0;
 
-        function init() {
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x000000);
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-            camera.position.z = 15;
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.shadowMap.enabled = true;
-            document.body.appendChild(renderer.domElement);
+// Для решения проблемы с "безопасными зонами"
+let playerInactiveTime = 0;
+const MAX_INACTIVE_TIME = 5; // 5 секунд
+let lastPlayerPosition = { x: 0, y: 0 };
+let lastAggressiveAsteroidTime = 0;
+const AGGRESSIVE_ASTEROID_INTERVAL = 3; // 3 секунды
 
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-            scene.add(ambientLight);
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(5, 5, 5);
-            directionalLight.castShadow = true;
-            scene.add(directionalLight);
+// Инициализация VK Bridge
+async function initVK() {
+try {
+// Инициализация VK Bridge
+await vkBridge.send('VKWebAppInit', {});
 
-            addStars();
-            initControls();
-            loadShip();
+// Получаем информацию о пользователе
+const userInfo = await vkBridge.send('VKWebAppGetUserInfo');
+vkUser = userInfo;
+vkUserId = userInfo.id;
 
-            if(localStorage.getItem('highScore')) {
-                highScore = parseInt(localStorage.getItem('highScore'));
-                document.getElementById('highScoreValue').textContent = highScore;
-                document.getElementById('finalHighScore').textContent = highScore;
-            }
+// Обновляем имя игрока в статистике
+document.getElementById('playerName').textContent = 
+vkUser.first_name + ' ' + vkUser.last_name;
 
-            if(localStorage.getItem('totalKilled')) {
-                totalKilled = parseInt(localStorage.getItem('totalKilled'));
-                document.getElementById('totalKilled').textContent = totalKilled;
-            }
+// Получаем токен доступа
+const tokenData = await vkBridge.send('VKWebAppGetAuthToken', {
+app_id: APP_ID,
+scope: 'storage'
+});
+vkAccessToken = tokenData.access_token;
 
-            animate();
-            window.addEventListener('resize', onWindowResize);
-            document.addEventListener('keydown', function(e) {
-                if(e.code === 'Space') shoot();
-            });
+// Загружаем статистику
+await loadStats();
 
-            const shootButton = document.getElementById('shootButton');
-            shootButton.addEventListener('touchstart', function(e) {
-                e.preventDefault();
-                shoot();
-            });
-            window.addEventListener('resize', updateShootButtonPosition);
-            updateShootButtonPosition();
-        }
+console.log('VK Bridge инициализирован');
+} catch (error) {
+console.error('Ошибка инициализации VK Bridge:', error);
+// Загружаем локальные данные, если не удалось подключиться к VK
+loadLocalStats();
+}
+}
 
-        function loadShip() {
-            loader.load('models/spaceship.glb', 
-                function(gltf) {
-                    ship = gltf.scene;
-                    ship.scale.set(0.15, 0.15, 0.15);
-                    ship.traverse(function(child) {
-                        if(child.isMesh) {
-                            child.material = new THREE.MeshStandardMaterial({
-                                color: 0x4477ff,
-                                metalness: 0.7,
-                                roughness: 0.3,
-                                emissive: 0x2244aa,
-                                emissiveIntensity: 0.5
-                            });
-                            child.castShadow = true;
-                            child.receiveShadow = true;
-                        }
-                    });
-                    scene.add(ship);
-                },
-                undefined,
-                function(error) {
-                    console.error('Error loading spaceship:', error);
-                    const geometry = new THREE.BoxGeometry(1, 1, 2);
-                    const material = new THREE.MeshStandardMaterial({
-                        color: 0x4477ff,
-                        metalness: 0.7,
-                        roughness: 0.3
-                    });
-                    ship = new THREE.Mesh(geometry, material);
-                    scene.add(ship);
-                }
-            );
-        }
+// Загрузка статистики из VK Cloud Storage
+async function loadStats() {
+try {
+const response = await vkBridge.send('VKWebAppStorageGet', {
+keys: ['spaceStats'],
+global: true
+});
 
-        function addAsteroid() {
-            const geometry = new THREE.IcosahedronGeometry(0.8, 1);
-            const material = new THREE.MeshStandardMaterial({
-                color: 0x888888,
-                roughness: 0.8,
-                metalness: 0.2,
-                flatShading: true
-            });
-            const asteroid = new THREE.Mesh(geometry, material);
-            
-            asteroid.position.set(
-                (Math.random() - 0.5) * 10,
-                (Math.random() - 0.5) * 6,
-                -70 - Math.random() * 30
-            );
-            
-            asteroid.speed = ASTEROID_BASE_SPEED + speed * 0.3;
-            asteroid.rotationSpeed = {
-                x: (Math.random() - 0.5) * 0.02,
-                y: (Math.random() - 0.5) * 0.02,
-                z: (Math.random() - 0.5) * 0.02
-            };
-            
-            scene.add(asteroid);
-            asteroids.push(asteroid);
-        }
+if (response.keys && response.keys.length > 0 && response.keys[0].value) {
+const stats = JSON.parse(response.keys[0].value);
+highScore = stats.highScore || 0;
+totalKilled = stats.totalKilled || 0;
 
-        function shoot() {
-            if(!canShoot || !ship || gameOver) return;
-            const geometry = new THREE.SphereGeometry(0.1);
-            const material = new THREE.MeshBasicMaterial({ color: 0xffa500 });
-            const bullet = new THREE.Mesh(geometry, material);
-            bullet.position.copy(ship.position);
-            bullet.position.z += 1;
-            scene.add(bullet);
-            bullets.push(bullet);
-            canShoot = false;
-            setTimeout(() => canShoot = true, SHOOT_DELAY);
-        }
+// Обновляем UI
+document.getElementById('highScoreValue').textContent = highScore;
+document.getElementById('finalHighScore').textContent = highScore;
+document.getElementById('totalKilled').textContent = totalKilled;
 
-        function updateBullets(deltaTime) {
-            for(let i = bullets.length - 1; i >= 0; i--) {
-                const bullet = bullets[i];
-                bullet.position.z -= BULLET_SPEED * deltaTime;
-                if(bullet.position.z < -15) {
-                    scene.remove(bullet);
-                    bullets.splice(i, 1);
-                    continue;
-                }
-                for(let j = asteroids.length - 1; j >= 0; j--) {
-                    const asteroid = asteroids[j];
-                    if(bullet.position.distanceTo(asteroid.position) < 1.2) {
-                        scene.remove(asteroid);
-                        scene.remove(bullet);
-                        asteroids.splice(j, 1);
-                        bullets.splice(i, 1);
-                        score += 20;
-                        totalKilled++;
-                        localStorage.setItem('totalKilled', totalKilled);
-                        document.getElementById('totalKilled').textContent = totalKilled;
-                        updateScore();
-                        break;
-                    }
-                }
-            }
-        }
+console.log('Статистика загружена из VK Cloud Storage');
+} else {
+// Если данных нет, загружаем из локального хранилища
+loadLocalStats();
+}
+} catch (error) {
+console.error('Ошибка загрузки статистики из VK:', error);
+loadLocalStats();
+}
+}
 
-        function updateAsteroids(deltaTime) {
-            spawnTimer += deltaTime;
-            if(spawnTimer >= SPAWN_INTERVAL) {
-                addAsteroid();
-                spawnTimer = 0;
-                SPAWN_INTERVAL = Math.max(0.2, BASE_SPAWN_INTERVAL / (1 + speed * 0.1));
-            }
+// Загрузка статистики из локального хранилища
+function loadLocalStats() {
+if (localStorage.getItem('highScore')) {
+highScore = parseInt(localStorage.getItem('highScore'));
+document.getElementById('highScoreValue').textContent = highScore;
+document.getElementById('finalHighScore').textContent = highScore;
+}
 
-            for(let i = asteroids.length - 1; i >= 0; i--) {
-                const asteroid = asteroids[i];
-                
-                asteroid.position.z += asteroid.speed * deltaTime;
-                
-                asteroid.rotation.x += asteroid.rotationSpeed.x * deltaTime;
-                asteroid.rotation.y += asteroid.rotationSpeed.y * deltaTime;
-                asteroid.rotation.z += asteroid.rotationSpeed.z * deltaTime;
+if (localStorage.getItem('totalKilled')) {
+totalKilled = parseInt(localStorage.getItem('totalKilled'));
+document.getElementById('totalKilled').textContent = totalKilled;
+}
 
-                if(asteroid.position.z > 5) {
-                    scene.remove(asteroid);
-                    asteroids.splice(i, 1);
-                    score += 10;
-                    updateScore();
-                    continue;
-                }
+console.log('Статистика загружена из локального хранилища');
+}
 
-                if(ship && asteroid.position.distanceTo(ship.position) < 1.4) {
-                    endGame();
-                    break;
-                }
-            }
-        }
+// Сохранение статистики
+async function saveStats() {
+const stats = {
+highScore: highScore,
+totalKilled: totalKilled,
+userId: vkUserId || 'guest',
+timestamp: Date.now()
+};
 
-        function initControls() {
-            const joystick = document.getElementById('joystick');
-            const stick = document.getElementById('stick');
+// Сохраняем в локальное хранилище
+localStorage.setItem('highScore', highScore);
+localStorage.setItem('totalKilled', totalKilled);
 
-            document.addEventListener('touchstart', function(e) {
-                e.preventDefault();
-                isTouching = true;
-                joystick.style.display = 'block';
-                joystickBaseX = e.touches[0].clientX;
-                joystickBaseY = e.touches[0].clientY;
-                joystick.style.left = `${joystickBaseX}px`;
-                joystick.style.top = `${joystickBaseY}px`;
-            });
+// Если подключены к VK, сохраняем в облако
+if (vkAccessToken) {
+try {
+await vkBridge.send('VKWebAppStorageSet', {
+key: 'spaceStats',
+value: JSON.stringify(stats),
+global: true
+});
+console.log('Статистика сохранена в VK Cloud Storage');
+} catch (error) {
+console.error('Ошибка сохранения статистики в VK:', error);
+}
+}
+}
 
-            document.addEventListener('touchmove', function(e) {
-                if (!isTouching) return;
-                e.preventDefault();
-                updateJoystickPosition(e.touches[0].clientX, e.touches[0].clientY);
-            });
+// Показ баннера рекламы
+function showBannerAd() {
+vkBridge.send("VKWebAppShowBannerAd")
+.then(response => {
+console.log('Баннерная реклама показана:', response);
+})
+.catch(error => {
+console.error('Ошибка при показе баннерной рекламы:', error);
+});
+}
 
-            document.addEventListener('touchend', function() {
-                resetJoystick();
-            });
+// Скрытие баннера рекламы
+function hideBannerAd() {
+vkBridge.send("VKWebAppHideBannerAd")
+.then(response => {
+console.log('Баннерная реклама скрыта:', response);
+})
+.catch(error => {
+console.error('Ошибка при скрытии баннерной рекламы:', error);
+});
+}
 
-            document.addEventListener('mousedown', function(e) {
-                if (e.button !== 0) return;
-                isTouching = true;
-                joystick.style.display = 'block';
-                joystickBaseX = e.clientX;
-                joystickBaseY = e.clientY;
-                joystick.style.left = `${joystickBaseX}px`;
-                joystick.style.top = `${joystickBaseY}px`;
-            });
+// Поделиться результатом
+async function shareResult() {
+try {
+await vkBridge.send('VKWebAppShare', {
+link: 'https://vk.com/app' + APP_ID,
+title: 'Space Runner',
+text: `Я набрал ${score} очков в Space Runner! Попробуй побить мой рекорд!`
+});
+} catch (error) {
+console.error('Ошибка при попытке поделиться:', error);
+alert("Поделиться не удалось. Скопируйте ссылку вручную.");
+}
+}
 
-            document.addEventListener('mousemove', function(e) {
-                if (!isTouching) return;
-                updateJoystickPosition(e.clientX, e.clientY);
-            });
+function calculateBoundaries() {
+const cameraZ = camera.position.z;
+const aspect = window.innerWidth / window.innerHeight;
+const fovRad = THREE.MathUtils.degToRad(camera.fov / 2);
+const visibleWidth = 2 * Math.tan(fovRad) * cameraZ * aspect;
+const visibleHeight = 2 * Math.tan(fovRad) * cameraZ;
+currentBoundaries.x = Math.min(MAX_BOUNDARIES.x, visibleWidth * 0.45);
+currentBoundaries.y = Math.min(MAX_BOUNDARIES.y, visibleHeight * 0.45);
+}
 
-            document.addEventListener('mouseup', function() {
-                resetJoystick();
-            });
+function updateShipPosition(deltaTime) {
+if (!gameStarted || gameOver || !ship) return;
+calculateBoundaries();
 
-            function updateJoystickPosition(clientX, clientY) {
-                deltaX = (clientX - joystickBaseX) / 75;
-                deltaY = (clientY - joystickBaseY) / 75;
-                const distance = Math.sqrt(deltaX**2 + deltaY**2);
-                if (distance > 1) {
-                    deltaX /= distance;
-                    deltaY /= distance;
-                }
-                stick.style.transform = `translate(${deltaX * 25}px, ${deltaY * 25}px)`;
-            }
+// Сохраняем текущую позицию для сравнения
+const prevX = ship.position.x;
+const prevY = ship.position.y;
 
-            function resetJoystick() {
-                isTouching = false;
-                joystick.style.display = 'none';
-                deltaX = deltaY = 0;
-                stick.style.transform = 'translate(0, 0)';
-            }
-        }
+ship.position.x = THREE.MathUtils.clamp(
+ship.position.x + deltaX * moveSpeed * deltaTime,
+-currentBoundaries.x,
+currentBoundaries.x
+);
 
-        function addStars() {
-            const starsGeometry = new THREE.BufferGeometry();
-            const starPositions = new Float32Array(2000 * 3);
-            for(let i = 0; i < 2000; i++) {
-                starPositions[i*3] = (Math.random() - 0.5) * 2000;
-                starPositions[i*3+1] = (Math.random() - 0.5) * 2000;
-                starPositions[i*3+2] = (Math.random() - 0.5) * 2000;
-            }
-            starsGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-            const starMaterial = new THREE.PointsMaterial({
-                color: 0xFFFFFF, 
-                size: 0.7,
-                sizeAttenuation: true
-            });
-            const starField = new THREE.Points(starsGeometry, starMaterial);
-            scene.add(starField);
-        }
+ship.position.y = THREE.MathUtils.clamp(
+ship.position.y + -deltaY * moveSpeed * deltaTime,
+-currentBoundaries.y,
+currentBoundaries.y
+);
 
-        function startGame() {
-            score = 0;
-            speed = 5;
-            gameOver = false;
-            gameStarted = true;
-            spawnTimer = 0;
-            SPAWN_INTERVAL = BASE_SPAWN_INTERVAL;
-            startTime = Date.now();
-            
-            asteroids.forEach(a => scene.remove(a));
-            asteroids = [];
-            bullets.forEach(b => scene.remove(b));
-            bullets = [];
-            
-            if(ship) {
-                ship.position.set(0, 0, 0);
-                ship.rotation.set(0, 0, 0);
-            }
-            
-            document.getElementById('score').style.display = 'block';
-            document.getElementById('menu').style.display = 'none';
-            document.getElementById('gameOver').style.display = 'none';
-            updateScore();
-        }
+// Проверяем, двигался ли игрок
+if (Math.abs(ship.position.x - prevX) > 0.01 || Math.abs(ship.position.y - prevY) > 0.01) {
+playerInactiveTime = 0; // Сбрасываем таймер неактивности
+lastPlayerPosition = { x: ship.position.x, y: ship.position.y };
+} else {
+// Игрок не двигается
+playerInactiveTime += deltaTime;
+}
 
-        function endGame() {
-            gameOver = true;
-            gameStarted = false;
-            if(score > highScore) {
-                highScore = score;
-                localStorage.setItem('highScore', highScore);
-                document.getElementById('highScoreValue').textContent = highScore;
-                document.getElementById('finalHighScore').textContent = highScore;
-            }
-            document.getElementById('gameOver').style.display = 'block';
-            document.getElementById('finalScore').textContent = score;
-        }
+ship.rotation.z = THREE.MathUtils.lerp(ship.rotation.z, -deltaX * 0.3, 0.1 * deltaTime * 60);
+ship.rotation.x = THREE.MathUtils.lerp(ship.rotation.x, deltaY * 0.2, 0.1 * deltaTime * 60);
+}
 
-        function showMenu() {
-            asteroids.forEach(a => scene.remove(a));
-            asteroids = [];
-            bullets.forEach(b => scene.remove(b));
-            bullets = [];
-            document.getElementById('menu').style.display = 'block';
-            document.getElementById('gameOver').style.display = 'none';
-            document.getElementById('stats').style.display = 'none';
-            gameStarted = false;
-            if(ship) ship.position.set(0, 0, 0);
-        }
+function onWindowResize() {
+camera.aspect = window.innerWidth / window.innerHeight;
+camera.updateProjectionMatrix();
+renderer.setSize(window.innerWidth, window.innerHeight);
+calculateBoundaries();
+}
 
-        function showStats() {
-            const totalTime = Math.floor((Date.now() - startTime) / 1000);
-            const minutes = Math.floor(totalTime / 60);
-            const seconds = totalTime % 60;
-            document.getElementById('totalTime').textContent = 
-                `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            document.getElementById('stats').style.display = 'block';
-            document.getElementById('menu').style.display = 'none';
-        }
+function init() {
+scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000000);
+camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+camera.position.z = 15;
+renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = true;
+document.body.appendChild(renderer.domElement);
 
-        function hideStats() {
-            document.getElementById('stats').style.display = 'none';
-            document.getElementById('menu').style.display = 'block';
-        }
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+directionalLight.position.set(5, 5, 5);
+directionalLight.castShadow = true;
+scene.add(directionalLight);
 
-        function updateScore() {
-            document.getElementById('score').textContent = `Score: ${score}`;
-        }
+addStars();
+initControls();
+loadShip();
 
-        function animate() {
-            const currentTime = Date.now();
-            const deltaTime = (currentTime - prevTime) / 1000;
-            prevTime = currentTime;
+// Инициализация VK
+initVK();
 
-            requestAnimationFrame(animate);
-            
-            if(!gameOver && gameStarted) {
-                updateShipPosition(deltaTime);
-                updateAsteroids(deltaTime);
-                updateBullets(deltaTime);
-                speed += SPEED_INCREASE_RATE * deltaTime;
-            }
-            renderer.render(scene, camera);
-        }
+animate();
+window.addEventListener('resize', onWindowResize);
+document.addEventListener('keydown', function(e) {
+if(e.code === 'Space') shoot();
+});
 
-        function updateShootButtonPosition() {
-            const shootButton = document.getElementById('shootButton');
-            const cameraZ = camera.position.z;
-            const viewWidth = (cameraZ * Math.tan(THREE.MathUtils.degToRad(camera.fov/2))) * 2;
-            const leftBound = -viewWidth/2 * window.innerWidth / window.innerHeight;
-            shootButton.style.left = `${window.innerWidth/2 + leftBound * 100 + 20}px`;
-        }
+const shootButton = document.getElementById('shootButton');
+shootButton.addEventListener('touchstart', function(e) {
+e.preventDefault();
+shoot();
+});
+window.addEventListener('resize', updateShootButtonPosition);
+updateShootButtonPosition();
 
-        init();
-    </script>
+// Добавляем обработчик для кнопки "Поделиться"
+document.getElementById('shareBtn').addEventListener('click', shareResult);
+
+// Запрещаем контекстное меню (дополнительная защита от выделения)
+document.addEventListener('contextmenu', e => e.preventDefault());
+}
+
+function loadShip() {
+loader.load('models/spaceship.glb', function(gltf) {
+ship = gltf.scene;
+ship.scale.set(0.15, 0.15, 0.15);
+
+// Рассчитываем bounding box для модели
+ship.userData.bbox = new THREE.Box3().setFromObject(ship);
+
+// Для отладки (можно включить визуализацию)
+if (false) { // поменяйте на true для отладки
+const helper = new THREE.Box3Helper(ship.userData.bbox, 0xffff00);
+scene.add(helper);
+}
+
+scene.add(ship);
+}, undefined, function(error) {
+console.error('Error loading spaceship:', error);
+const geometry = new THREE.BoxGeometry(1, 1, 2);
+const material = new THREE.MeshStandardMaterial({
+color: 0x4477ff,
+metalness: 0.7,
+roughness: 0.3
+});
+ship = new THREE.Mesh(geometry, material);
+ship.userData.bbox = new THREE.Box3().setFromObject(ship);
+scene.add(ship);
+});
+}
+
+function addAsteroid() {
+const geometry = new THREE.IcosahedronGeometry(0.8, 1);
+const material = new THREE.MeshStandardMaterial({
+color: 0x888888,
+roughness: 0.8,
+metalness: 0.2,
+flatShading: true
+});
+const asteroid = new THREE.Mesh(geometry, material);
+
+asteroid.position.set(
+(Math.random() - 0.5) * 10,
+(Math.random() - 0.5) * 6,
+-70 - Math.random() * 30
+);
+
+asteroid.speed = ASTEROID_BASE_SPEED + speed * 0.3;
+asteroid.rotationSpeed = {
+x: (Math.random() - 0.5) * 0.02,
+y: (Math.random() - 0.5) * 0.02,
+z: (Math.random() - 0.5) * 0.02
+};
+
+scene.add(asteroid);
+asteroids.push(asteroid);
+}
+
+// Создаем астероид, направленный на игрока
+function addAggressiveAsteroid() {
+const geometry = new THREE.IcosahedronGeometry(0.8, 1);
+const material = new THREE.MeshStandardMaterial({
+color: 0xff4444, // Красный цвет для агрессивных астероидов
+roughness: 0.8,
+metalness: 0.2,
+flatShading: true
+});
+const asteroid = new THREE.Mesh(geometry, material);
+
+// Начальная позиция за пределами экрана
+asteroid.position.set(
+(Math.random() - 0.5) * 10,
+(Math.random() - 0.5) * 6,
+-70
+);
+
+// Направляем астероид к игроку
+if (ship) {
+const direction = new THREE.Vector3(
+ship.position.x - asteroid.position.x,
+ship.position.y - asteroid.position.y,
+0
+).normalize();
+
+// Увеличиваем скорость для агрессивных астероидов
+asteroid.speed = ASTEROID_BASE_SPEED * 1.5 + speed * 0.3;
+
+// Сохраняем направление движения
+asteroid.userData.direction = direction;
+}
+
+asteroid.rotationSpeed = {
+x: (Math.random() - 0.5) * 0.02,
+y: (Math.random() - 0.5) * 0.02,
+z: (Math.random() - 0.5) * 0.02
+};
+
+scene.add(asteroid);
+asteroids.push(asteroid);
+return asteroid;
+}
+
+function shoot() {
+if(!canShoot || !ship || gameOver) return;
+const geometry = new THREE.SphereGeometry(0.1);
+const material = new THREE.MeshBasicMaterial({ color: 0xffa500 });
+const bullet = new THREE.Mesh(geometry, material);
+bullet.position.copy(ship.position);
+bullet.position.z += 1;
+scene.add(bullet);
+bullets.push(bullet);
+canShoot = false;
+setTimeout(() => canShoot = true, SHOOT_DELAY);
+}
+
+function updateBullets(deltaTime) {
+for(let i = bullets.length - 1; i >= 0; i--) {
+const bullet = bullets[i];
+bullet.position.z -= BULLET_SPEED * deltaTime;
+if(bullet.position.z < -15) {
+scene.remove(bullet);
+bullets.splice(i, 1);
+continue;
+}
+for(let j = asteroids.length - 1; j >= 0; j--) {
+const asteroid = asteroids[j];
+if(bullet.position.distanceTo(asteroid.position) < 1.2) {
+scene.remove(asteroid);
+scene.remove(bullet);
+asteroids.splice(j, 1);
+bullets.splice(i, 1);
+// Уменьшаем награду за уничтожение астероида
+score += 2;
+totalKilled++;
+// Сохраняем обновленную статистику
+saveStats();
+document.getElementById('totalKilled').textContent = totalKilled;
+updateScore();
+break;
+}
+}
+}
+}
+
+function updateAsteroids(deltaTime) {
+spawnTimer += deltaTime;
+if(spawnTimer >= SPAWN_INTERVAL) {
+addAsteroid();
+spawnTimer = 0;
+SPAWN_INTERVAL = Math.max(0.2, BASE_SPAWN_INTERVAL / (1 + speed * 0.1));
+}
+
+// Проверяем, не стоит ли игрок слишком долго на месте
+if (playerInactiveTime > MAX_INACTIVE_TIME) {
+const currentTime = Date.now() / 1000; // В секундах
+if (currentTime - lastAggressiveAsteroidTime > AGGRESSIVE_ASTEROID_INTERVAL) {
+addAggressiveAsteroid();
+lastAggressiveAsteroidTime = currentTime;
+}
+}
+
+for(let i = asteroids.length - 1; i >= 0; i--) {
+const asteroid = asteroids[i];
+
+// Для агрессивных астероидов - движение к игроку
+if (asteroid.userData && asteroid.userData.direction && ship) {
+asteroid.position.x += asteroid.userData.direction.x * asteroid.speed * deltaTime;
+asteroid.position.y += asteroid.userData.direction.y * asteroid.speed * deltaTime;
+asteroid.position.z += asteroid.speed * deltaTime;
+} else {
+// Обычное движение
+asteroid.position.z += asteroid.speed * deltaTime;
+}
+
+asteroid.rotation.x += asteroid.rotationSpeed.x * deltaTime;
+asteroid.rotation.y += asteroid.rotationSpeed.y * deltaTime;
+asteroid.rotation.z += asteroid.rotationSpeed.z * deltaTime;
+
+if(asteroid.position.z > 5) {
+scene.remove(asteroid);
+asteroids.splice(i, 1);
+// Уменьшаем награду за пролет астероида
+score += 1;
+updateScore();
+continue;
+}
+
+// Новая проверка столкновений через Box3
+if(ship) {
+// Обновляем bounding box для текущего положения корабля
+ship.userData.bbox.setFromObject(ship);
+
+// Создаем временный bounding box для астероида
+const asteroidBox = new THREE.Box3().setFromObject(asteroid);
+
+// Проверяем пересечение
+if(ship.userData.bbox.intersectsBox(asteroidBox)) {
+endGame();
+break;
+}
+}
+}
+}
+
+function initControls() {
+const joystick = document.getElementById('joystick');
+const stick = document.getElementById('stick');
+
+document.addEventListener('touchstart', function(e) {
+// Показываем джойстик только во время игры
+if (!gameStarted) return;
+
+e.preventDefault();
+isTouching = true;
+joystick.style.display = 'block';
+joystickBaseX = e.touches[0].clientX;
+joystickBaseY = e.touches[0].clientY;
+joystick.style.left = `${joystickBaseX}px`;
+joystick.style.top = `${joystickBaseY}px`;
+});
+
+document.addEventListener('touchmove', function(e) {
+if (!isTouching || !gameStarted) return;
+e.preventDefault();
+updateJoystickPosition(e.touches[0].clientX, e.touches[0].clientY);
+});
+
+document.addEventListener('touchend', function() {
+resetJoystick();
+});
+
+document.addEventListener('mousedown', function(e) {
+// Показываем джойстик только во время игры
+if (!gameStarted) return;
+if (e.button !== 0) return;
+
+isTouching = true;
+joystick.style.display = 'block';
+joystickBaseX = e.clientX;
+joystickBaseY = e.clientY;
+joystick.style.left = `${joystickBaseX}px`;
+joystick.style.top = `${joystickBaseY}px`;
+});
+
+document.addEventListener('mousemove', function(e) {
+if (!isTouching || !gameStarted) return;
+updateJoystickPosition(e.clientX, e.clientY);
+});
+
+document.addEventListener('mouseup', function() {
+resetJoystick();
+});
+
+function updateJoystickPosition(clientX, clientY) {
+deltaX = (clientX - joystickBaseX) / 75;
+deltaY = (clientY - joystickBaseY) / 75;
+const distance = Math.sqrt(deltaX**2 + deltaY**2);
+if (distance > 1) {
+deltaX /= distance;
+deltaY /= distance;
+}
+stick.style.transform = `translate(${deltaX * 25}px, ${deltaY * 25}px)`;
+}
+
+function resetJoystick() {
+isTouching = false;
+joystick.style.display = 'none';
+deltaX = deltaY = 0;
+stick.style.transform = 'translate(0, 0)';
+}
+}
+
+function addStars() {
+const starsGeometry = new THREE.BufferGeometry();
+const starPositions = new Float32Array(2000 * 3);
+for(let i = 0; i < 2000; i++) {
+starPositions[i*3] = (Math.random() - 0.5) * 2000;
+starPositions[i*3+1] = (Math.random() - 0.5) * 2000;
+starPositions[i*3+2] = (Math.random() - 0.5) * 2000;
+}
+starsGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+const starMaterial = new THREE.PointsMaterial({
+color: 0xFFFFFF,
+size: 0.7,
+sizeAttenuation: true
+});
+const starField = new THREE.Points(starsGeometry, starMaterial);
+scene.add(starField);
+}
+
+function startGame() {
+score = 0;
+speed = 5;
+gameOver = false;
+gameStarted = true;
+spawnTimer = 0;
+SPAWN_INTERVAL = BASE_SPAWN_INTERVAL;
+startTime = Date.now();
+playerInactiveTime = 0;
+lastAggressiveAsteroidTime = 0;
+
+asteroids.forEach(a => scene.remove(a));
+asteroids = [];
+bullets.forEach(b => scene.remove(b));
+bullets = [];
+
+if(ship) {
+ship.position.set(0, 0, 0);
+ship.rotation.set(0, 0, 0);
+lastPlayerPosition = { x: 0, y: 0 };
+}
+
+document.getElementById('score').style.display = 'block';
+document.getElementById('menu').style.display = 'none';
+document.getElementById('gameOver').style.display = 'none';
+updateScore();
+
+// Показываем кнопку стрельбы на мобильных устройствах
+if ('ontouchstart' in window) {
+document.getElementById('shootButton').style.display = 'block';
+}
+
+showBannerAd();
+}
+
+function endGame() {
+gameOver = true;
+gameStarted = false;
+
+// Обновление рекорда
+if(score > highScore) {
+highScore = score;
+saveStats();
+document.getElementById('highScoreValue').textContent = highScore;
+document.getElementById('finalHighScore').textContent = highScore;
+}
+
+document.getElementById('gameOver').style.display = 'block';
+document.getElementById('finalScore').textContent = score;
+showBannerAd();
+}
+
+function showMenu() {
+asteroids.forEach(a => scene.remove(a));
+asteroids = [];
+bullets.forEach(b => scene.remove(b));
+bullets = [];
+document.getElementById('menu').style.display = 'block';
+document.getElementById('gameOver').style.display = 'none';
+document.getElementById('stats').style.display = 'none';
+document.getElementById('score').style.display = 'none'; // Скрываем счет
+gameStarted = false;
+if(ship) ship.position.set(0, 0, 0);
+
+// Скрываем кнопку стрельбы
+document.getElementById('shootButton').style.display = 'none';
+
+showBannerAd();
+}
+
+function showStats() {
+const totalTime = Math.floor((Date.now() - startTime) / 1000);
+const minutes = Math.floor(totalTime / 60);
+const seconds = totalTime % 60;
+document.getElementById('totalTime').textContent = 
+`${minutes}:${seconds.toString().padStart(2, '0')}`;
+document.getElementById('stats').style.display = 'block';
+document.getElementById('menu').style.display = 'none';
+}
+
+function hideStats() {
+document.getElementById('stats').style.display = 'none';
+document.getElementById('menu').style.display = 'block';
+}
+
+function updateScore() {
+document.getElementById('score').textContent = `Score: ${score}`;
+}
+
+function animate() {
+const currentTime = Date.now();
+const deltaTime = (currentTime - prevTime) / 1000;
+prevTime = currentTime;
+
+requestAnimationFrame(animate);
+
+if(!gameOver && gameStarted) {
+updateShipPosition(deltaTime);
+updateAsteroids(deltaTime);
+updateBullets(deltaTime);
+speed += SPEED_INCREASE_RATE * deltaTime;
+}
+renderer.render(scene, camera);
+}
+
+function updateShootButtonPosition() {
+const shootButton = document.getElementById('shootButton');
+// Простая позиция в правом нижнем углу
+shootButton.style.right = '30px';
+shootButton.style.bottom = '30px';
+}
+
+// Запуск игры
+init();
+</script>
 </body>
 </html>
